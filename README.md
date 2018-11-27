@@ -24,11 +24,6 @@ With the following XML fragment you can configure your Cloudtwatch logback appen
     <appender name="cloud-watch" class="io.github.dibog.AwsLogAppender">
 
         <awsConfig>
-            <credentials>
-                <accessKeyId></accessKeyId>
-                <secretAccessKey></secretAccessKey>
-            </credentials>
-
             <region></region>
 
             <clientConfig class="com.amazonaws.ClientConfiguration">
@@ -51,6 +46,8 @@ With the following XML fragment you can configure your Cloudtwatch logback appen
     
 To be able to use the appender the IAM profile under which the logging is running requires    
 at least the following AWS permissions:
+* ``logs:CreateLogStream``
+* ``logs:DescribeLogGroups``
 * ``logs:DescribeLogStreams``
 * ``logs:PutLogEvents``
 

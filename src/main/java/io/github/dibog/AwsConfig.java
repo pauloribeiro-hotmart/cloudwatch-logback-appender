@@ -17,18 +17,16 @@
 package io.github.dibog;
 
 import com.amazonaws.ClientConfiguration;
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.AWSCredentialsProvider;
+import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.services.logs.AWSLogs;
 import com.amazonaws.services.logs.AWSLogsClientBuilder;
 
 public class AwsConfig {
     private ClientConfiguration clientConfig;
-    private AwsCredentials credentials;
     private String region;
 
-    public void setCredentials(AwsCredentials credentials) {
-        this.credentials = credentials;
-    }
     public void setClientConfig(ClientConfiguration clientConfig) {
         this.clientConfig = clientConfig;
     }
@@ -47,9 +45,16 @@ public class AwsConfig {
             builder.withClientConfiguration(new ClientConfiguration());
         }
 
-        if(credentials!=null) {
-            builder.withCredentials(new AWSStaticCredentialsProvider(credentials));
-        }
+        builder.withCredentials(new AWSCredentialsProvider() {
+            @Override
+            public AWSCredentials getCredentials() {
+                return DefaultAWSCredentialsProviderChain.getInstance().getCredentials();
+            }
+            @Override
+            public void refresh() {
+            	DefaultAWSCredentialsProviderChain.getInstance().refresh();
+            }
+        });
 
         return builder.build();
     }
