@@ -31,6 +31,8 @@ public class AwsLogAppender extends AppenderBase<ILoggingEvent> {
     String dateFormat;
     int queueLength = 500;
     Layout<ILoggingEvent> layout;
+    
+    private Properties properties;
 
     public void setAwsConfig(AwsConfig config) {
         this.awsConfig = config;
@@ -94,4 +96,12 @@ public class AwsLogAppender extends AppenderBase<ILoggingEvent> {
         dump.shutdown();
         dump = null;
     }
+
+	public void setProperties(Properties properties) {
+		this.properties = properties;
+	}
+
+	public Properties getProperties() {
+		return properties;
+	}
 }
