@@ -73,6 +73,7 @@ public class AwsLogAppender extends AppenderBase<ILoggingEvent> {
 
         AwsCWEventDump queue = dump;
         if (dump != null) {
+            event.prepareForDeferredProcessing();
             dump.queue(event);
         }
 
@@ -92,8 +93,10 @@ public class AwsLogAppender extends AppenderBase<ILoggingEvent> {
     @Override
     public void stop() {
         super.stop();
-        // flush it
-        dump.shutdown();
+        if(dump!=null) {
+            // flush it
+            dump.shutdown();
+        }
         dump = null;
     }
 

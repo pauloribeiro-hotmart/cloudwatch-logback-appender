@@ -15,7 +15,7 @@ This project provides a [logback appender](https://logback.qos.ch/) whichs targe
     <dependency>
         <groupId>io.github.dibog</groupId>
         <artifactId>cloudwatch-logback-appender</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.3</version>
     </dependency>
 
 ## Configuration
@@ -76,8 +76,10 @@ to create the required logGroup in AWS. Setting it to ``false`` means that the l
 that the logGroup already exists. The default value is ``false``.
 
 * ``<queueLength>``: Valid Arguments: an positive integer indicating the queue length which is used 
-to desynchronize the calling of the logger appender and the writing of the logging events into AWS.
-The argument is optional and has an default value.
+to decouple the calling of the logger appender and the writing of the logging events into AWS.
+The argument is optional and has an default value. If the queue is not long enough you will get a message
+like ``Skipped <n> messages in the last log cycle.`` within the log. Enlarging the queue length
+might resolve this issue when there are some bursts of log message from time to time.
 
 * ``<groupName>``: The name of the log group. If ``<createLogGroup>`` was configured to ``true`` the log group
 will be created it it does not yet exist. 
@@ -96,6 +98,24 @@ one created.
 ( See https://logback.qos.ch/manual/layouts.html#PatternLayout. ) 
 If the tag is missing, the logging event will be transformed into a json object.
 
+## Tips and Tricks
+
+### [](#unique-log-stream-names) Unique log stream names
+
+To make the log stream name unqiue across the same application and multiple ec2 instances, 
+we can use the variable substitution mechanism of logback:
+ 
+    <appender name="cloud-watch" class="io.github.dibog.AwsLogAppender">
+
+        <!-- just referencing the important settings -->
+        <streamName>stream-name-${instance.id}</streamName>
+        
+    </appender>
+
+And set the variable (in our case) `instance.id` via either `-D` from the command line, or via calling 
+`System.setProperty("instance.id", uniqueId)` as one of the first methods in your main. 
+
+Setting via `-D` is the recommended way.
 
 ## Caveats
 
